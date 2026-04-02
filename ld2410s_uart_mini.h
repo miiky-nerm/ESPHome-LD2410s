@@ -1,18 +1,25 @@
-#include "esphome.h"
+#include "esphome/core/component.h"
+#include "esphome/components/uart/uart.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
+
+using namespace esphome;
+using namespace uart;
 
 #define CHECK_BIT(var, pos) (((var) >> (pos)) & 1)
 
-class LD2410S : public PollingComponent, public UARTDevice
+class LD2410S : public Component, public UARTDevice
 {
 public:
   LD2410S(UARTComponent *parent) : UARTDevice(parent) {}
 
-  BinarySensor *hasTarget = new BinarySensor(); //人体存在判断
-  BinarySensor *lastCommandSuccess = new BinarySensor();
-  Sensor *TargetDistance = new Sensor(); //距离
-  TextSensor *outputMode = new TextSensor(); //输出模式：极简（推荐）、正常、门限值设置
+  binary_sensor::BinarySensor *hasTarget{nullptr}; //人体存在判断
+  binary_sensor::BinarySensor *lastCommandSuccess{nullptr};
+  sensor::Sensor *TargetDistance{nullptr}; //距离
+  text_sensor::TextSensor *outputMode{nullptr}; //输出模式：极简（推荐）、正常、门限值设置
 
-  long lastPeriodicMillis = millis();
+  uint32_t lastPeriodicMillis{0};
 
   //发送控制命令封包
   void sendCommand(char *commandStr, char *commandValue, int commandValueLen)
@@ -167,6 +174,7 @@ public:
     while (available())
     {
       readline(read(), buffer, max_line_length);
+      yield();
     }
   }
   
