@@ -1,0 +1,32 @@
+esphome:
+  name: ld2410s-test
+
+external_components:
+  - source: github://miiky-nerm/ESPHome-LD2410s@main
+
+uart:
+  id: uart_bus
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 256000
+
+ld2410s:
+
+binary_sensor:
+  - platform: ld2410s
+    has_target:
+      name: "人体存在"
+
+  - platform: ld2410s
+    last_command_success:
+      name: "命令执行成功"
+
+sensor:
+  - platform: ld2410s
+    target_distance:
+      name: "目标距离"
+
+text_sensor:
+  - platform: ld2410s
+    output_mode:
+      name: "输出模式"
